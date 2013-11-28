@@ -17,7 +17,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		ret = -1;
 		goto beach;
 	}
-	n = cs_disasm_dyn (handle, (char*)buf, R_MIN (4, len), 0, 0, &insn);
+	n = cs_disasm_dyn (handle, (char*)buf, R_MIN (4, len), 0, 1, &insn);
 	if (n<1) {
 		ret = -1;
 		goto beach;
