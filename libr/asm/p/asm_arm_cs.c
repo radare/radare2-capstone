@@ -5,7 +5,7 @@
 #include <capstone.h>
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
-	ut64 handle;
+	csh handle;
 	cs_insn *insn;
 	int mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
 	int n, ret = (a->bits==64)?
@@ -17,7 +17,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		ret = -1;
 		goto beach;
 	}
-	n = cs_disasm_dyn (handle, (char*)buf, R_MIN (4, len), 0, 1, &insn);
+	n = cs_disasm_dyn (handle, (ut8*)buf, R_MIN (4, len), 0, 1, &insn);
 	if (n<1) {
 		ret = -1;
 		goto beach;
