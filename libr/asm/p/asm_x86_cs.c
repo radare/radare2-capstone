@@ -30,6 +30,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 RAsmPlugin r_asm_plugin_x86_cs = {
 	.name = "x86.cs",
 	.desc = "Capstone X86 disassembler",
+	.license = "BSD",
 	.arch = "x86",
 	.bits = (int[]){ 16, 32, 64, 0 },
 	.init = NULL,
