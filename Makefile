@@ -1,8 +1,4 @@
-all:
-	cd libr/asm/p ; ${MAKE}
+DIRS=libr/asm/p
 
-install:
-	cd libr/asm/p ; ${MAKE} install
-
-uninstall:
-	cd libr/asm/p ; ${MAKE} uninstall
+all clean install uninstall:
+	$(foreach dir,${DIRS},${MAKE} -C $(dir) $@)

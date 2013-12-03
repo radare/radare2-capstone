@@ -11,7 +11,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
 	op->inst_len = 0;
 	if (ret) goto beach;
-	n = cs_disasm_dyn (handle, (ut8*)buf, len, 4, 1, &insn);
+	n = cs_disasm_dyn (handle, (ut8*)buf, len, a->pc, 1, &insn);
 	if (n<1) goto beach;
 	if (insn[0].size<1)
 		goto beach;

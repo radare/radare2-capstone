@@ -11,9 +11,10 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		(a->bits==32)? CS_MODE_32:
 		(a->bits==16)? CS_MODE_16: 0;
 	int n, ret = cs_open (CS_ARCH_X86, mode, &handle);
+	ut64 off = a->pc;
 	op->inst_len = 0;
 	if (ret) goto beach;
-	n = cs_disasm_dyn (handle, (ut8*)buf, len, 0, 1, &insn);
+	n = cs_disasm_dyn (handle, (ut8*)buf, len, off, 1, &insn);
 	if (n<1) goto beach;
 	if (insn[0].size<1)
 		goto beach;
