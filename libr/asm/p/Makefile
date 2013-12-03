@@ -4,8 +4,8 @@ SO_EXT=dylib
 CFLAGS=$(shell pkg-config --cflags r_asm)
 LDFLAGS=$(shell pkg-config --libs r_asm)
 # capstone
-CFLAGS+=-I/usr/include/capstone
-LDFLAGS+=/usr/lib/libcapstone.a
+CFLAGS+=$(shell pkg-config --cflags capstone)
+LDFLAGS+=$(shell pkg-config --libs capstone)
 
 all:
 	${CC} -fPIC -shared -o asm_x86_cs.${SO_EXT} \
