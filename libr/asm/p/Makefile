@@ -1,5 +1,14 @@
-PREFIX?=/usr
+ARCHS=arm x86 mips
+
+R2DIR=$(shell r2 -hh| grep LIBR_PLUGINS|awk '{print $$2}')
+
+DESTDIR?=
+LFX=$(DESTDIR)$(R2DIR)
+ifeq ($(shell uname),Darwin)
 SO_EXT=dylib
+else
+SO_EXT=so
+endif
 # r2
 CFLAGS=$(shell pkg-config --cflags r_asm)
 LDFLAGS=$(shell pkg-config --libs r_asm)
@@ -7,23 +16,36 @@ LDFLAGS=$(shell pkg-config --libs r_asm)
 CFLAGS+=$(shell pkg-config --cflags capstone)
 LDFLAGS+=$(shell pkg-config --libs capstone)
 
-all:
-	${CC} -fPIC -shared -o asm_x86_cs.${SO_EXT} \
-		$(CFLAGS) $(LDFLAGS) asm_x86_cs.c
-	${CC} -fPIC -shared -o asm_arm_cs.${SO_EXT} \
-		$(CFLAGS) $(LDFLAGS) asm_arm_cs.c
-	${CC} -fPIC -shared -o asm_mips_cs.${SO_EXT} \
-		$(CFLAGS) $(LDFLAGS) asm_mips_cs.c
+LIBS=$(addprefix asm_,$(addsuffix _cs.$(SO_EXT), $(ARCHS)))
+
+all: $(LIBS)
+
+%.o: %.c
+	${CC} -fPIC -c $(CFLAGS) $<
+
+define PLUGIN_template
+$(1): $(2)
+	${CC} -fPIC -shared -o $(1) $(CFLAGS) $(LDFLAGS) $(2)
+endef
+
+$(foreach lib,$(LIBS),$(eval \
+	$(call PLUGIN_template,$(lib),$(subst .$(SO_EXT),.o,$(lib)))))
 
 install:
-	cp asm_x86_cs.${SO_EXT} ${PREFIX}/lib/radare2/last/
-	cp asm_arm_cs.${SO_EXT} ${PREFIX}/lib/radare2/last/
-	cp asm_mips_cs.${SO_EXT} ${PREFIX}/lib/radare2/last/
+	@echo PREFIX ${LFX}
+	@$(foreach arch,${ARCHS},\
+		echo INSTALL asm_$(arch)_cs.$(SO_EXT) ; \
+		cp -f asm_$(arch)_cs.$(SO_EXT) $(LFX) ; \
+	)
 
 uninstall:
-	rm -f ${PREFIX}/lib/radare2/last/asm_x86_cs.${SO_EXT}
-	rm -f ${PREFIX}/lib/radare2/last/asm_arm_cs.${SO_EXT}
-	rm -f ${PREFIX}/lib/radare2/last/asm_mips_cs.${SO_EXT}
+	@echo PREFIX ${LFX}
+	@$(foreach arch,${ARCHS},\
+		echo UNINSTALL asm_$(arch)_cs.$(SO_EXT) ; \
+		rm -f $(LFX)/asm_$(arch)_cs.$(SO_EXT)   ; \
+	)
 
 clean:
-	rm -f *.${SO_EXT}
+	rm -f *.${SO_EXT} *.o
+
+.PHONY: all install uninstall clean
