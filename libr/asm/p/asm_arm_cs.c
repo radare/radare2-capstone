@@ -31,6 +31,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		insn[0].mnemonic,
 		insn[0].op_str[0]?" ":"",
 		insn[0].op_str);
+	r_str_rmch (op->buf_asm, '#');
 	beach:
 	cs_close (handle);
 	return op->inst_len;
