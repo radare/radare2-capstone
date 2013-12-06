@@ -1,4 +1,4 @@
-DIRS=asm/p
+DIRS=asm anal
 .PHONY: all clean install uninstall
 all clean install uninstall:
 	$(foreach dir,${DIRS},${MAKE} -C $(dir) $@;)
