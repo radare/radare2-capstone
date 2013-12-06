@@ -13,13 +13,13 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		cs_open (CS_ARCH_ARM64, mode, &handle):
 		cs_open (CS_ARCH_ARM, mode, &handle);
 	op->type = R_ANAL_OP_TYPE_NULL;
-	op->length = 0;
+	op->size = 0;
 	if (ret == CS_ERR_OK) {
 		n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
 		if (n<1) {
 			op->type = R_ANAL_OP_TYPE_ILL;
 		} else {
-			op->length = insn[0].size;
+			op->size = insn[0].size;
 			switch (insn[0].id) {
 			case ARM_INS_ADD:
 				op->type = R_ANAL_OP_TYPE_ADD;
@@ -52,7 +52,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	}
 	beach:
 	cs_close (handle);
-	return op->length;
+	return op->size;
 }
 
 RAnalPlugin r_anal_plugin_arm_cs = {

@@ -10,14 +10,14 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	cs_insn *insn;
 	int mode = CS_MODE_BIG_ENDIAN; // CS_MODE_MICRO, N64
 	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
-	op->length = 0;
+	op->size = 0;
 	if (ret != CS_ERR_OK) goto fin;
 	n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
 	if (n<1) goto beach;
 	if (insn[0].size<1)
 		goto beach;
 	op->type = R_ANAL_OP_TYPE_NULL;
-	op->length = insn[0].size;
+	op->size = insn[0].size;
 	switch (insn[0].id) {
 	case MIPS_INS_BREAK:
 		op->type = R_ANAL_OP_TYPE_TRAP;
@@ -41,7 +41,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
-	return op->length;
+	return op->size;
 }
 
 RAnalPlugin r_anal_plugin_mips_cs = {

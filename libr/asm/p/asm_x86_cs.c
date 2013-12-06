@@ -12,20 +12,20 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		(a->bits==16)? CS_MODE_16: 0;
 	int n, ret = cs_open (CS_ARCH_X86, mode, &handle);
 	ut64 off = a->pc;
-	op->inst_len = 0;
+	op->size = 0;
 	if (ret) goto beach;
 	n = cs_disasm_dyn (handle, (ut8*)buf, len, off, 1, &insn);
 	if (n<1) goto beach;
 	if (insn[0].size<1)
 		goto beach;
-	op->inst_len = insn[0].size;
+	op->size = insn[0].size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
 		insn[0].mnemonic,
 		insn[0].op_str[0]?" ":"",
 		insn[0].op_str);
 	beach:
 	cs_close (handle);
-	return op->inst_len;
+	return op->size;
 }
 
 RAsmPlugin r_asm_plugin_x86_cs = {

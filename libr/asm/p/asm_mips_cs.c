@@ -10,13 +10,13 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN; // CS_MODE_MICRO, N64
 	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
 	memset (op, sizeof (RAsmOp), 0);
-	op->inst_len = 4;
+	op->size = 4;
 	if (ret) goto fin;
 	n = cs_disasm_dyn (handle, (ut8*)buf, len, a->pc, 1, &insn);
 	if (n<1) goto beach;
 	if (insn[0].size<1)
 		goto beach;
-	op->inst_len = insn[0].size;
+	op->size = insn[0].size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
 		insn[0].mnemonic,
 		insn[0].op_str[0]? " ": "",
@@ -24,7 +24,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
-	return op->inst_len;
+	return op->size;
 }
 
 RAsmPlugin r_asm_plugin_mips_cs = {

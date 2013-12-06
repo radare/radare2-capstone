@@ -13,13 +13,13 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		(a->bits==16)? CS_MODE_16: 0;
 	int n, ret = cs_open (CS_ARCH_X86, mode, &handle);
 	op->type = R_ANAL_OP_TYPE_NULL;
-	op->length = 0;
+	op->size = 0;
 	if (ret == CS_ERR_OK) {
 		n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
 		if (n<1) {
 			op->type = R_ANAL_OP_TYPE_ILL;
 		} else {
-			op->length = insn[0].size;
+			op->size = insn[0].size;
 			switch (insn[0].id) {
 			case X86_INS_PUSH:
 			case X86_INS_PUSHA:
@@ -61,7 +61,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 			case X86_INS_JP:
 				op->type = R_ANAL_OP_TYPE_CJMP;
 				op->jump = insn[0].x86.operands[0].imm;
-				op->fail = addr+op->length;
+				op->fail = addr+op->size;
 				break;
 			case X86_INS_CALL:
 			case X86_INS_CALLW:
@@ -70,7 +70,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				// TODO: what if UCALL?
 				// TODO: use imm_size
 				op->jump = insn[0].x86.operands[0].imm;
-				op->fail = addr+op->length;
+				op->fail = addr+op->size;
 				break;
 			case X86_INS_JMP:
 			case X86_INS_LJMP:
@@ -88,7 +88,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		}
 		cs_close (handle);
 	}
-	return op->length;
+	return op->size;
 }
 
 RAnalPlugin r_anal_plugin_x86_cs = {

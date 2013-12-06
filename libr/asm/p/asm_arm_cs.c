@@ -11,7 +11,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	int n, ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
 		cs_open (CS_ARCH_ARM, mode, &handle);
-	op->inst_len = -1;
+	op->size = -1;
 	strcpy (op->buf_asm, "invalid");
 	if (ret) {
 		ret = -1;
@@ -26,7 +26,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		ret = -1;
 		goto beach;
 	}
-	op->inst_len = insn[0].size;
+	op->size = insn[0].size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
 		insn[0].mnemonic,
 		insn[0].op_str[0]?" ":"",
@@ -34,7 +34,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	r_str_rmch (op->buf_asm, '#');
 	beach:
 	cs_close (handle);
-	return op->inst_len;
+	return op->size;
 }
 
 RAsmPlugin r_asm_plugin_arm_cs = {
