@@ -6,14 +6,19 @@
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn *insn;
+	cs_insn *insn = NULL;
 	int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN; // CS_MODE_MICRO, N64
 	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
 	memset (op, sizeof (RAsmOp), 0);
 	op->size = 4;
 	if (ret) goto fin;
 	n = cs_disasm_dyn (handle, (ut8*)buf, len, a->pc, 1, &insn);
-	if (n<1) goto beach;
+	if (n<1) {
+		strcpy (op->buf_asm, "invalid");
+		op->size = -1;
+		ret = op->size;
+		goto beach;
+	} else ret = 4;
 	if (insn[0].size<1)
 		goto beach;
 	op->size = insn[0].size;
@@ -24,7 +29,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
-	return op->size;
+	return ret;
 }
 
 RAsmPlugin r_asm_plugin_mips_cs = {
