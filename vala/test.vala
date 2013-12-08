@@ -31,8 +31,8 @@ void main() {
 			if (op.id == Capstone.X86Insn.JMP) {
 				if (op.x86.operands[0].type == X86OpType.IMM) {
 					uint64 imm = op.x86.operands[0].imm;
-					stdout.printf ("=== 0x%x\n", (uint)imm);
-					//stdout.printf ("JUMP TO 0x%llx\n", imm);
+					stdout.printf ("=== 0x%lx\n",
+						(ulong)imm);
 				}
 			}
 		}
