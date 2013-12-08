@@ -8,9 +8,10 @@
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	csh handle;
 	cs_insn *insn;
-	int mode = CS_MODE_BIG_ENDIAN; // CS_MODE_MICRO, N64
+	int mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
+		 // CS_MODE_MICRO, N64
 	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
-	op->size = 0;
+	op->size = 4;
 	if (ret != CS_ERR_OK) goto fin;
 	n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
 	if (n<1) goto beach;
