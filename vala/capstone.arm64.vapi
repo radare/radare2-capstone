@@ -533,7 +533,6 @@ namespace Capstone {
 		ZIP1,
 		ZIP2,
 
-		nsn
 		MNEG,
 		UMNEGL,
 		SMNEGL,

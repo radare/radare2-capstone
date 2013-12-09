@@ -5,3 +5,6 @@ CS_ARM_FLAGS=-D CS_ARM --pkg capstone.arm ${CS_FLAGS}
 all:
 	valac $(CS_X86_FLAGS) test.vala 
 	valac $(CS_ARM_FLAGS) test-arm.vala
+
+doc:
+	valadoc -o capstone *.vapi

@@ -660,7 +660,6 @@ namespace Capstone {
 		FCC6,
 		FCC7,
 
-		8
 		W0,
 		W1,
 		W2,
