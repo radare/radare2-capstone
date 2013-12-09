@@ -6,8 +6,8 @@ void main() {
 	Insn* insn;
 	size_t handle;
 
-	if (Capstone.open (Capstone.Arch.X86,
-			Capstone.Mode.B32, out handle) != 0) {
+	var ret = Capstone.open (Capstone.Arch.X86, Capstone.Mode.B32, out handle);
+	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
 	}
