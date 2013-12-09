@@ -6,7 +6,7 @@ void main() {
 	Insn* insn;
 	size_t handle;
 
-	var ret = Capstone.open (Capstone.Arch.X86, Capstone.Mode.B32, out handle);
+	var ret = Capstone.open (Capstone.Arch.ARM, Capstone.Mode.B32, out handle);
 	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
@@ -28,13 +28,6 @@ void main() {
 				(string)op.mnemonic,
 				(string)op.op_str);
 			stdout.printf ("--> %d\n", (int)op.id);
-			if (op.id == Capstone.X86Insn.JMP) {
-				if (op.x86.operands[0].type == X86OpType.IMM) {
-					uint64 imm = op.x86.operands[0].imm;
-					stdout.printf ("=== 0x%lx\n",
-						(ulong)imm);
-				}
-			}
 		}
 	}
 	Capstone.close (handle);
