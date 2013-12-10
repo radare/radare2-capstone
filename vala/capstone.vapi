@@ -50,12 +50,9 @@ namespace Capstone {
 	public enum Mode {
 		LITTLE_ENDIAN = 0,
 		ARM = 0,
-		[CCode (cname="CS_MODE_16")]
-		B16 = 1<<1,
-		[CCode (cname="CS_MODE_32")]
-		B32 = 1<<2,
-		[CCode (cname="CS_MODE_64")]
-		B64 = 1<<3,
+		@16 = 1<<1,
+		@32 = 1<<2,
+		@64 = 1<<3,
 		THUMB = 1<<4,
 		MICRO = 1<<4,
 		N64 = 1<<5,

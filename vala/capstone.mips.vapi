@@ -538,70 +538,38 @@ namespace Capstone {
 	[CCode (cname="mips_reg", cprefix="MIPS_REG_", cheader_filename="mips.h")]
 	public enum MipsReg {
 		INVALID = 0,
-		[CCode (cname="MIPS_REG_0")]
-		R0,
-		[CCode (cname="MIPS_REG_1")]
-		R1,
-		[CCode (cname="MIPS_REG_1")]
-		R2,
-		[CCode (cname="MIPS_REG_1")]
-		R3,
-		[CCode (cname="MIPS_REG_1")]
-		R4,
-		[CCode (cname="MIPS_REG_5")]
-		R5,
-		[CCode (cname="MIPS_REG_6")]
-		R6,
-		[CCode (cname="MIPS_REG_7")]
-		R7,
-		[CCode (cname="MIPS_REG_8")]
-		R8,
-		[CCode (cname="MIPS_REG_9")]
-		R9,
-		[CCode (cname="MIPS_REG_10")]
-		R10,
-		[CCode (cname="MIPS_REG_11")]
-		R11,
-		[CCode (cname="MIPS_REG_12")]
-		R12,
-		[CCode (cname="MIPS_REG_13")]
-		R13,
-		[CCode (cname="MIPS_REG_14")]
-		R14,
-		[CCode (cname="MIPS_REG_15")]
-		R15,
-		[CCode (cname="MIPS_REG_16")]
-		R16,
-		[CCode (cname="MIPS_REG_17")]
-		R17,
-		[CCode (cname="MIPS_REG_18")]
-		R18,
-		[CCode (cname="MIPS_REG_19")]
-		R19,
-		[CCode (cname="MIPS_REG_20")]
-		R20,
-		[CCode (cname="MIPS_REG_21")]
-		R21,
-		[CCode (cname="MIPS_REG_22")]
-		R22,
-		[CCode (cname="MIPS_REG_23")]
-		R23,
-		[CCode (cname="MIPS_REG_24")]
-		R24,
-		[CCode (cname="MIPS_REG_25")]
-		R25,
-		[CCode (cname="MIPS_REG_26")]
-		R26,
-		[CCode (cname="MIPS_REG_27")]
-		R27,
-		[CCode (cname="MIPS_REG_28")]
-		R28,
-		[CCode (cname="MIPS_REG_29")]
-		R29,
-		[CCode (cname="MIPS_REG_30")]
-		R30,
-		[CCode (cname="MIPS_REG_31")]
-		R31,
+		@0,
+		@1,
+		@2,
+		@3,
+		@4,
+		@5,
+		@6,
+		@7,
+		@8,
+		@9,
+		@10,
+		@11,
+		@12,
+		@13,
+		@14,
+		@15,
+		@16,
+		@17,
+		@18,
+		@19,
+		@20,
+		@21,
+		@22,
+		@23,
+		@24,
+		@25,
+		@26,
+		@27,
+		@28,
+		@29,
+		@30,
+		@31,
 		DSPCCOND,
 		DSPCARRY,
 		DSPEFI,
@@ -695,39 +663,39 @@ namespace Capstone {
 
 		MAX,
 
-		ZERO = R0,
-		AT = R1,
-		V0 = R2,
-		V1 = R3,
-		A0 = R4,
-		A1 = R5,
-		A2 = R6,
-		A3 = R7,
-		T0 = R8,
-		T1 = R9,
-		T2 = R10,
-		T3 = R11,
-		T4 = R12,
-		T5 = R13,
-		T6 = R14,
-		T7 = R15,
-		S0 = R16,
-		S1 = R17,
-		S2 = R18,
-		S3 = R19,
-		S4 = R20,
-		S5 = R21,
-		S6 = R22,
-		S7 = R23,
-		T8 = R24,
-		T9 = R25,
-		K0 = R26,
-		K1 = R27,
-		GP = R28,
-		SP = R29,
-		FP = R30,
-		S8 = R30,
-		RA = R31,
+		ZERO = @0,
+		AT = @1,
+		V0 = @2,
+		V1 = @3,
+		A0 = @4,
+		A1 = @5,
+		A2 = @6,
+		A3 = @7,
+		T0 = @8,
+		T1 = @9,
+		T2 = @10,
+		T3 = @11,
+		T4 = @12,
+		T5 = @13,
+		T6 = @14,
+		T7 = @15,
+		S0 = @16,
+		S1 = @17,
+		S2 = @18,
+		S3 = @19,
+		S4 = @20,
+		S5 = @21,
+		S6 = @22,
+		S7 = @23,
+		T8 = @24,
+		T9 = @25,
+		K0 = @26,
+		K1 = @27,
+		GP = @28,
+		SP = @29,
+		FP = @30,
+		S8 = @30,
+		RA = @31,
 
 		HI0 = AC0,
 		HI1 = AC1,

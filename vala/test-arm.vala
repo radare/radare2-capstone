@@ -6,7 +6,7 @@ void main() {
 	Insn* insn;
 	size_t handle;
 
-	var ret = Capstone.open (Capstone.Arch.ARM, Capstone.Mode.B32, out handle);
+	var ret = Capstone.open (Capstone.Arch.ARM, Capstone.Mode.@32, out handle);
 	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
