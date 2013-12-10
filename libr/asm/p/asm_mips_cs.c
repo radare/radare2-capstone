@@ -7,9 +7,16 @@
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
 	cs_insn *insn = NULL;
-	//int mode = CS_MODE_64 | CS_MODE_BIG_ENDIAN; // CS_MODE_MICRO, N64
-        int mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
-	int n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
+	int mode, n, ret = cs_open (CS_ARCH_MIPS, mode, &handle);
+	mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
+	if (a->cpu) {
+		if (!strcmp (a->cpu, "n64")) {
+			mode |= CS_MODE_N64;
+		} else
+		if (!strcmp (a->cpu, "micro")) {
+			mode |= CS_MODE_MICRO;
+		}
+	}
 	memset (op, sizeof (RAsmOp), 0);
 	op->size = 4;
 	if (ret) goto fin;
