@@ -21,6 +21,35 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		} else {
 			op->size = insn[0].size;
 			switch (insn[0].id) {
+			case X86_INS_MOV:
+			case X86_INS_MOVZX:
+			case X86_INS_MOVABS:
+			case X86_INS_MOVBE:
+			case X86_INS_MOVSB:
+			case X86_INS_MOVSD:
+			case X86_INS_MOVSQ:
+			case X86_INS_MOVSS:
+			case X86_INS_MOVSW:
+			case X86_INS_MOVD:
+			case X86_INS_MOVQ:
+			case X86_INS_MOVDQ2Q:
+				op->type = R_ANAL_OP_TYPE_MOV;
+				break;
+			case X86_INS_CMP:
+			case X86_INS_VCMP:
+			case X86_INS_CMPPD:
+			case X86_INS_CMPPS:
+			case X86_INS_CMPSW:
+			case X86_INS_CMPSD:
+			case X86_INS_CMPSQ:
+			case X86_INS_CMPSB:
+			case X86_INS_CMPSS:
+			case X86_INS_TEST:
+				op->type = R_ANAL_OP_TYPE_CMP;
+				break;
+			case X86_INS_LEA:
+				op->type = R_ANAL_OP_TYPE_LEA;
+				break;
 			case X86_INS_PUSH:
 			case X86_INS_PUSHA:
 			case X86_INS_PUSHF:
@@ -45,20 +74,24 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 			case X86_INS_INT:
 				op->type = R_ANAL_OP_TYPE_TRAP;
 				break;
-			case X86_INS_JNE:
-			case X86_INS_JNS:
-			case X86_INS_JNP:
-			case X86_INS_JNO:
+			case X86_INS_JL:
 			case X86_INS_JLE:
 			case X86_INS_JA:
 			case X86_INS_JAE:
 			case X86_INS_JB:
 			case X86_INS_JBE:
+			case X86_INS_JCXZ:
+			case X86_INS_JECXZ:
 			case X86_INS_JO:
+			case X86_INS_JNO:
 			case X86_INS_JS:
-			case X86_INS_JE:
-			case X86_INS_JG:
+			case X86_INS_JNS:
 			case X86_INS_JP:
+			case X86_INS_JNP:
+			case X86_INS_JE:
+			case X86_INS_JNE:
+			case X86_INS_JG:
+			case X86_INS_JGE:
 				op->type = R_ANAL_OP_TYPE_CJMP;
 				op->jump = insn[0].x86.operands[0].imm;
 				op->fail = addr+op->size;
@@ -78,6 +111,17 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				// TODO: what if UJMP?
 				op->jump = insn[0].x86.operands[0].imm;
 				op->type = R_ANAL_OP_TYPE_JMP;
+				break;
+			case X86_INS_XOR:
+				op->type = R_ANAL_OP_TYPE_XOR;
+				break;
+			case X86_INS_AND:
+			case X86_INS_ANDN:
+			case X86_INS_ANDPD:
+			case X86_INS_ANDPS:
+			case X86_INS_ANDNPD:
+			case X86_INS_ANDNPS:
+				op->type = R_ANAL_OP_TYPE_AND;
 				break;
 			case X86_INS_ADD:
 			case X86_INS_FADD:
