@@ -4,7 +4,7 @@ using Capstone;
 
 void main() {
 	Insn* insn;
-	size_t handle;
+	Handle handle;
 
 	var ret = Capstone.open (Capstone.Arch.X86, Capstone.Mode.@32, out handle);
 	if (ret != Capstone.Error.OK) {

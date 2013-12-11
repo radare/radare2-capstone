@@ -4,19 +4,18 @@ using Capstone;
 
 void main() {
 	Insn* insn;
-	size_t handle;
+	Handle handle;
 
-	var ret = Capstone.open (Capstone.Arch.MIPS, Capstone.Mode.@32, out handle);
+	var ret = open (Capstone.Arch.MIPS, Capstone.Mode.@32, out handle);
 	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
 	}
 
-	uint8 *bytes = (void*)"\x06\x00\xa4\x24";
+	uint8 *bytes = (void*)"\x1c\x00\x40\x14";
 	int bytes_len = 4;
 
-	var n = Capstone.disasm_dyn (handle, 
-		(void*)bytes, bytes_len,
+	var n = disasm_dyn (handle, (void*)bytes, bytes_len,
 		0x01000, 0, out insn);
 	if (n == 0) {
 		stderr.printf ("invalid\n");
@@ -26,8 +25,14 @@ void main() {
 			stdout.printf ("%s %s\n",
 				(string)op.mnemonic,
 				(string)op.op_str);
-			stdout.printf ("op.id=%d\n", (int)op.id);
+			if (op.id == MipsInsn.BNEZ) {
+				stdout.printf ("Works fine!\n");
+			} else {
+				stdout.printf ("Invalid decomposition :(!\n");
+				stdout.printf ("op.id=%d (should be %d)\n", (int)op.id,
+					MipsInsn.BNEZ);
+			}
 		}
 	}
-	Capstone.close (handle);
+	close (handle);
 }
