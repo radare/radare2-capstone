@@ -7,7 +7,7 @@
 
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn *insn;
+	cs_insn insn;
 	int mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
 	int n, ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
@@ -15,12 +15,12 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	op->type = R_ANAL_OP_TYPE_NULL;
 	op->size = 0;
 	if (ret == CS_ERR_OK) {
-		n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
+		n = cs_disasm (handle, (ut8*)buf, len, addr, 1, &insn);
 		if (n<1) {
 			op->type = R_ANAL_OP_TYPE_ILL;
 		} else {
-			op->size = insn[0].size;
-			switch (insn[0].id) {
+			op->size = insn.size;
+			switch (insn.id) {
 			case ARM_INS_ADD:
 				op->type = R_ANAL_OP_TYPE_ADD;
 				break;
@@ -49,7 +49,6 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				break;
 			}
 		}
-		cs_free (insn);
 	}
 	beach:
 	cs_close (handle);

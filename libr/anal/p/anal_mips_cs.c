@@ -8,7 +8,7 @@
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	int opsize = -1;
 	csh handle;
-	cs_insn *insn = NULL;
+	cs_insn insn;
 	int n, ret, mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
 	mode |= (a->bits==64)? CS_MODE_64: CS_MODE_32;
 // XXX no arch->cpu ?!?! CS_MODE_MICRO, N64
@@ -16,12 +16,12 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	op->type = R_ANAL_OP_TYPE_ILL;
 	op->size = 4;
 	if (ret != CS_ERR_OK) goto fin;
-	n = cs_disasm_dyn (handle, (ut8*)buf, len, addr, 1, &insn);
-	if (n<1 || insn[0].size<1)
+	n = cs_disasm (handle, (ut8*)buf, len, addr, 1, &insn);
+	if (n<1 || insn.size<1)
 		goto beach;
 	op->type = R_ANAL_OP_TYPE_NULL;
-	opsize = op->size = insn[0].size;
-	switch (insn[0].id) {
+	opsize = op->size = insn.size;
+	switch (insn.id) {
 	case MIPS_INS_INVALID:
 		op->type = R_ANAL_OP_TYPE_ILL;
 		break;
@@ -139,7 +139,6 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
-	cs_free (insn);
 	return opsize;
 }
 

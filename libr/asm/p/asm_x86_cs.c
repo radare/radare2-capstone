@@ -6,7 +6,7 @@
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn *insn = NULL;
+	cs_insn insn;
 	int mode = (a->bits==64)? CS_MODE_64: 
 		(a->bits==32)? CS_MODE_32:
 		(a->bits==16)? CS_MODE_16: 0;
@@ -14,18 +14,17 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	ut64 off = a->pc;
 	op->size = 0;
 	if (ret) goto beach;
-	n = cs_disasm_dyn (handle, (ut8*)buf, len, off, 1, &insn);
+	n = cs_disasm (handle, (ut8*)buf, len, off, 1, &insn);
 	if (n<1) goto beach;
-	if (insn[0].size<1)
+	if (insn.size<1)
 		goto beach;
-	op->size = insn[0].size;
+	op->size = insn.size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
-		insn[0].mnemonic,
-		insn[0].op_str[0]?" ":"",
-		insn[0].op_str);
+		insn.mnemonic,
+		insn.op_str[0]?" ":"",
+		insn.op_str);
 	beach:
 	cs_close (handle);
-	cs_free (insn);
 	return op->size;
 }
 
