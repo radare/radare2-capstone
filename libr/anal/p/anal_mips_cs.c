@@ -8,7 +8,7 @@
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	int opsize = -1;
 	csh handle;
-	cs_insn *insn;
+	cs_insn *insn = NULL;
 	int n, ret, mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
 	mode |= (a->bits==64)? CS_MODE_64: CS_MODE_32;
 // XXX no arch->cpu ?!?! CS_MODE_MICRO, N64
@@ -139,6 +139,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
+	cs_free (insn);
 	return opsize;
 }
 

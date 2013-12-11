@@ -6,7 +6,7 @@
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn *insn;
+	cs_insn *insn = NULL;
 	int mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
 	int n, ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
@@ -34,6 +34,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	r_str_rmch (op->buf_asm, '#');
 	beach:
 	cs_close (handle);
+	cs_free (insn);
 	return op->size;
 }
 

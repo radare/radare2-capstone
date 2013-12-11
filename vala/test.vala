@@ -36,5 +36,6 @@ void main() {
 			}
 		}
 	}
+	Capstone.free (insn);
 	Capstone.close (handle);
 }

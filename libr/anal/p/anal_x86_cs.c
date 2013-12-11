@@ -132,6 +132,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		}
 		cs_close (handle);
 	}
+	cs_free (insn);
 	return op->size;
 }
 

@@ -39,6 +39,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	beach:
 	cs_close (handle);
 	fin:
+	cs_free (insn);
 	return ret;
 }
 

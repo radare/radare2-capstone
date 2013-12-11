@@ -49,6 +49,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				break;
 			}
 		}
+		cs_free (insn);
 	}
 	beach:
 	cs_close (handle);

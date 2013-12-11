@@ -99,6 +99,9 @@ namespace Capstone {
 	[CCode (cname="cs_insn_group")]
 	public static string insn_group (Handle handle, Insn *insn, uint group_id);
 
+	[CCode (cname="cs_free")]
+	public static void free (Insn *mem);
+
 	[CCode (cname="cs_reg_read")]
 	public static string reg_read (Handle handle, Insn *insn, uint reg_id);
 
