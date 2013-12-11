@@ -32,5 +32,6 @@ How to use
 ----------
 
 	rasm2 -a x86.cs -d 90
-	r2 -a arm.cs /bin/ls
-	r2 -e asm.arch=mips.cs mips-elf-file
+	r2 -a arm.cs elf-arm-linux-ls
+	r2 -a mips.cs -e asm.cpu=n64 n64.rom
+
