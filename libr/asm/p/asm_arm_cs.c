@@ -11,7 +11,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	int n, ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
 		cs_open (CS_ARCH_ARM, mode, &handle);
-	op->size = -1;
+	op->size = 4;
 	strcpy (op->buf_asm, "invalid");
 	if (ret) {
 		ret = -1;
