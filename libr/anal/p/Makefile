@@ -1,4 +1,5 @@
 ARCHS=x86 arm mips
+include ../../../config.mk
 
 #arm x86 mips
 
@@ -11,12 +12,18 @@ SO_EXT=dylib
 else
 SO_EXT=so
 endif
+PKG_CONFIG=pkg-config
 # r2
-CFLAGS=$(shell pkg-config --cflags r_anal)
-LDFLAGS=$(shell pkg-config --libs r_anal)
+CFLAGS=$(shell $(PKG_CONFIG) --cflags r_anal)
+LDFLAGS=$(shell $(PKG_CONFIG) --libs r_anal)
 # capstone
-CFLAGS+=$(shell pkg-config --cflags capstone)
-LDFLAGS+=$(shell pkg-config --libs capstone)
+ifeq ($(CS_STATIC),1)
+CFLAGS+=$(shell $(PKG_CONFIG) --cflags capstone)
+LDFLAGS+=$(shell $(PKG_CONFIG) --variable=archive capstone)
+else
+CFLAGS+=$(shell $(PKG_CONFIG) --cflags capstone)
+LDFLAGS+=$(shell $(PKG_CONFIG) --libs capstone)
+endif
 
 CFLAGS+=-g
 LDFLAGS+=-g
