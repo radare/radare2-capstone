@@ -36,6 +36,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		insn.mnemonic,
 		insn.op_str[0]? " ": "",
 		insn.op_str);
+	// TODO: remove the '$'<registername> in the string
 	beach:
 	cs_close (handle);
 	fin:
