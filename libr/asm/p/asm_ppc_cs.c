@@ -1,4 +1,4 @@
-/* radare2 - LGPL - Copyright 2013-2014 - pancake */
+/* radare2 - LGPL - Copyright 2014 - pancake */
 
 #include <r_asm.h>
 #include <r_lib.h>
@@ -21,8 +21,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	cs_insn* insn;
 
 	mode = (a->bits==64)? CS_MODE_64: 
-		(a->bits==32)? CS_MODE_32:
-		(a->bits==16)? CS_MODE_16: 0;
+		(a->bits==32)? CS_MODE_32: 0;
 	if (handle && mode != omode) {
 		cs_close (handle);
 		handle = 0;
@@ -30,7 +29,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	op->size = 0;
 	omode = mode;
 	if (handle == 0) {
-		ret = cs_open (CS_ARCH_X86, mode, &handle);
+		ret = cs_open (CS_ARCH_PPC, mode, &handle);
 		if (ret) return 0;
 	}
 	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
@@ -47,12 +46,12 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	return op->size;
 }
 
-RAsmPlugin r_asm_plugin_x86_cs = {
-	.name = "x86.cs",
-	.desc = "Capstone X86 disassembler",
+RAsmPlugin r_asm_plugin_ppc_cs = {
+	.name = "ppc.cs",
+	.desc = "Capstone PowerPC disassembler",
 	.license = "BSD",
-	.arch = "x86",
-	.bits = 16|32|64,
+	.arch = "ppc",
+	.bits = 32|64,
 	.init = NULL,
 	.fini = the_end,
 	.disassemble = &disassemble,
@@ -62,6 +61,6 @@ RAsmPlugin r_asm_plugin_x86_cs = {
 #ifndef CORELIB
 struct r_lib_struct_t radare_plugin = {
 	.type = R_LIB_TYPE_ASM,
-	.data = &r_asm_plugin_x86_cs
+	.data = &r_asm_plugin_ppc_cs
 };
 #endif

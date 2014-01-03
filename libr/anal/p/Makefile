@@ -1,7 +1,6 @@
-ARCHS=x86 arm mips
-include ../../../config.mk
+ARCHS=x86 arm mips ppc
 
-#arm x86 mips
+include ../../../config.mk
 
 R2DIR=$(shell r2 -hh| grep LIBR_PLUGINS|awk '{print $$2}')
 
