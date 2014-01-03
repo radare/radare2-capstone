@@ -1,4 +1,4 @@
-/* radare2 - LGPL - Copyright 2013 - pancake */
+/* radare2 - LGPL - Copyright 2013-2014 - pancake */
 
 #include <r_asm.h>
 #include <r_lib.h>
@@ -6,7 +6,7 @@
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn insn;
+	cs_insn* insn;
 	int mode, n, ret = -1;
 	mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
 	if (a->cpu) {
@@ -22,22 +22,23 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	op->size = 4;
 	ret = cs_open (CS_ARCH_MIPS, mode, &handle);
 	if (ret) goto fin;
-	n = cs_disasm (handle, (ut8*)buf, len, a->pc, 1, &insn);
+	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
+	n = cs_disasm_ex (handle, (ut8*)buf, len, a->pc, 1, &insn);
 	if (n<1) {
 		strcpy (op->buf_asm, "invalid");
 		op->size = 4;
 		ret = -1;
 		goto beach;
 	} else ret = 4;
-	if (insn.size<1)
+	if (insn->size<1)
 		goto beach;
-	op->size = insn.size;
+	op->size = insn->size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
-		insn.mnemonic,
-		insn.op_str[0]? " ": "",
-		insn.op_str);
+		insn->mnemonic, insn->op_str[0]? " ": "",
+		insn->op_str);
 	// TODO: remove the '$'<registername> in the string
 	beach:
+	cs_free (insn, n);
 	cs_close (handle);
 	fin:
 	return ret;

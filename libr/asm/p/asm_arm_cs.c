@@ -1,4 +1,4 @@
-/* radare2 - LGPL - Copyright 2013 - pancake */
+/* radare2 - LGPL - Copyright 2013-2014 - pancake */
 
 #include <r_asm.h>
 #include <r_lib.h>
@@ -6,7 +6,7 @@
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn insn;
+	cs_insn* insn;
 	int mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
 	int n, ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
@@ -17,22 +17,24 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		ret = -1;
 		goto beach;
 	}
-	n = cs_disasm (handle, (ut8*)buf, R_MIN (4, len), a->pc, 1, &insn);
+	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
+	n = cs_disasm_ex (handle, (ut8*)buf, R_MIN (4, len), a->pc, 1, &insn);
 	if (n<1) {
 		ret = -1;
 		goto beach;
 	}
-	if (insn.size<1) {
+	if (insn->size<1) {
 		ret = -1;
 		goto beach;
 	}
-	op->size = insn.size;
+	op->size = insn->size;
 	snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
-		insn.mnemonic,
-		insn.op_str[0]?" ":"",
-		insn.op_str);
+		insn->mnemonic,
+		insn->op_str[0]?" ":"",
+		insn->op_str);
 	r_str_rmch (op->buf_asm, '#');
 	beach:
+	cs_free (insn, n);
 	cs_close (handle);
 	return op->size;
 }

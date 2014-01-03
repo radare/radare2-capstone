@@ -6,22 +6,23 @@
 #include <mips.h>
 
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
-	int opsize = -1;
+	int n, ret, opsize = -1;
 	csh handle;
-	cs_insn insn;
-	int n, ret, mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
+	cs_insn* insn;
+	int mode = a->big_endian? CS_MODE_BIG_ENDIAN: CS_MODE_LITTLE_ENDIAN;
+
 	mode |= (a->bits==64)? CS_MODE_64: CS_MODE_32;
 // XXX no arch->cpu ?!?! CS_MODE_MICRO, N64
 	ret = cs_open (CS_ARCH_MIPS, mode, &handle);
 	op->type = R_ANAL_OP_TYPE_ILL;
 	op->size = 4;
 	if (ret != CS_ERR_OK) goto fin;
-	n = cs_disasm (handle, (ut8*)buf, len, addr, 1, &insn);
-	if (n<1 || insn.size<1)
+	n = cs_disasm_ex (handle, (ut8*)buf, len, addr, 1, &insn);
+	if (n<1 || insn->size<1)
 		goto beach;
 	op->type = R_ANAL_OP_TYPE_NULL;
-	opsize = op->size = insn.size;
-	switch (insn.id) {
+	opsize = op->size = insn->size;
+	switch (insn->id) {
 	case MIPS_INS_INVALID:
 		op->type = R_ANAL_OP_TYPE_ILL;
 		break;
@@ -137,6 +138,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 		break;
 	}
 	beach:
+	cs_free (insn, n);
 	cs_close (handle);
 	fin:
 	return opsize;

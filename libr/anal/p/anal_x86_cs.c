@@ -5,9 +5,13 @@
 #include <capstone.h>
 #include <x86.h>
 
+#if CS_API_MAJOR < 2
+#error Old Capstone not supported
+#endif
+
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	csh handle;
-	cs_insn insn;
+	cs_insn *insn;
 	int mode = (a->bits==64)? CS_MODE_64: 
 		(a->bits==32)? CS_MODE_32:
 		(a->bits==16)? CS_MODE_16: 0;
@@ -15,12 +19,13 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	op->type = R_ANAL_OP_TYPE_NULL;
 	op->size = 0;
 	if (ret == CS_ERR_OK) {
-		n = cs_disasm (handle, (ut8*)buf, len, addr, 1, &insn);
+		// capstone-next
+		n = cs_disasm_ex (handle, (const ut8*)buf, len, addr, 1, &insn);
 		if (n<1) {
 			op->type = R_ANAL_OP_TYPE_ILL;
 		} else {
-			op->size = insn.size;
-			switch (insn.id) {
+			op->size = insn->size;
+			switch (insn->id) {
 			case X86_INS_MOV:
 			case X86_INS_MOVZX:
 			case X86_INS_MOVABS:
@@ -93,7 +98,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 			case X86_INS_JG:
 			case X86_INS_JGE:
 				op->type = R_ANAL_OP_TYPE_CJMP;
-				op->jump = insn.x86.operands[0].imm;
+				op->jump = insn->detail->x86.operands[0].imm;
 				op->fail = addr+op->size;
 				break;
 			case X86_INS_CALL:
@@ -102,14 +107,14 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				op->type = R_ANAL_OP_TYPE_CALL;
 				// TODO: what if UCALL?
 				// TODO: use imm_size
-				op->jump = insn.x86.operands[0].imm;
+				op->jump = insn->detail->x86.operands[0].imm;
 				op->fail = addr+op->size;
 				break;
 			case X86_INS_JMP:
 			case X86_INS_LJMP:
 			case X86_INS_JMPQ:
 				// TODO: what if UJMP?
-				op->jump = insn.x86.operands[0].imm;
+				op->jump = insn->detail->x86.operands[0].imm;
 				op->type = R_ANAL_OP_TYPE_JMP;
 				break;
 			case X86_INS_XOR:
@@ -130,6 +135,7 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				break;
 			}
 		}
+		cs_free (insn, n);
 		cs_close (handle);
 	}
 	return op->size;
