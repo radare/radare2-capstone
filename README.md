@@ -12,10 +12,11 @@ radare2 (from git)
 	cd radare2
 	sys/install.sh
 
-capstone (1.0)
+capstone (> 1.0)
 
 	git clone https://github.com/aquynh/capstone.git
 	cd capstone
+	git co ppc # next
 	make -j 8
 	make install PREFIX=/usr
 
