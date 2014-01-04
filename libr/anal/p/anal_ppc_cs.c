@@ -3,7 +3,11 @@
 #include <r_anal.h>
 #include <r_lib.h>
 #include <capstone.h>
+
+// XXX
 #include <ppc.h>
+
+#ifdef CS_ARCH_PPC
 
 #if CS_API_MAJOR < 2
 #error Old Capstone not supported
@@ -47,4 +51,5 @@ struct r_lib_struct_t radare_plugin = {
 	.type = R_LIB_TYPE_ANAL,
 	.data = &r_anal_plugin_ppc_cs
 };
+#endif
 #endif
