@@ -18,7 +18,8 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		goto beach;
 	}
 	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
-	n = cs_disasm_ex (handle, (ut8*)buf, R_MIN (4, len), a->pc, 1, &insn);
+	n = cs_disasm_ex (handle, (ut8*)buf, R_MIN (4, len),
+		a->pc, 1, &insn);
 	if (n<1) {
 		ret = -1;
 		goto beach;

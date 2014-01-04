@@ -18,7 +18,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	static int omode = 0;
 	int mode, n, ret;
 	ut64 off = a->pc;
-	cs_insn* insn;
+	cs_insn* insn = NULL;
 
 	mode = (a->bits==64)? CS_MODE_64: 
 		(a->bits==32)? CS_MODE_32:
@@ -32,8 +32,8 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	if (handle == 0) {
 		ret = cs_open (CS_ARCH_X86, mode, &handle);
 		if (ret) return 0;
+		cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
 	}
-	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
 	n = cs_disasm_ex (handle, (const ut8*)buf, len, off, 1, &insn);
 	if (n>0) {
 		if (insn->size>0) {
@@ -42,8 +42,8 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 				insn->mnemonic, insn->op_str[0]?" ":"",
 				insn->op_str);
 		}
-		cs_free (insn, n);
 	}
+	cs_free (insn, n);
 	return op->size;
 }
 
