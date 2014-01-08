@@ -5,10 +5,15 @@
 #include <capstone.h>
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
-	csh handle;
+	int n, ret, mode;
 	cs_insn* insn;
-	int mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
-	int n, ret = (a->bits==64)?
+	csh handle;
+	mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
+	if (a->big_endian)
+		mode |= CS_MODE_BIG_ENDIAN;
+	else
+		mode |= CS_MODE_LITTLE_ENDIAN;
+	ret = (a->bits==64)?
 		cs_open (CS_ARCH_ARM64, mode, &handle):
 		cs_open (CS_ARCH_ARM, mode, &handle);
 	op->size = 4;

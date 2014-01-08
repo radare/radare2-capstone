@@ -15,7 +15,7 @@ endif
 PKG_CONFIG=pkg-config
 
 # r2
-CFLAGS=$(shell $(PKG_CONFIG) --cflags r_asm)
+CFLAGS=$(shell $(PKG_CONFIG) --cflags r_asm) -g
 LDFLAGS=$(shell $(PKG_CONFIG) --libs r_asm)
 # capstone
 ifeq ($(CS_STATIC),1)

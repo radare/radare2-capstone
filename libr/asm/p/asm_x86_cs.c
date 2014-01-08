@@ -4,6 +4,34 @@
 #include <r_lib.h>
 #include <capstone.h>
 
+static int bufi = 0;
+static char buf[2990240];
+
+static void *my_malloc(size_t s) {
+	char *ret;
+	printf ("MALLOC %d / %d\n", s, bufi);
+	ret = buf+bufi;
+	bufi += (s*2);
+	return ret;
+}
+
+static void *my_calloc(size_t c, size_t s) {
+return calloc(c, s);
+	printf ("--> calloc %d %zu\n", c, s);
+	return my_malloc (c*s);
+}
+
+static void *my_realloc(void *p, size_t s) {
+//return realloc (p, s);
+eprintf ("REALLOC %d\n", s);
+	return p;
+}
+
+static void my_free(void *p) {
+	printf ("FREE %p\n", p);
+//free (p);
+}
+
 static csh handle = 0;
 
 static int the_end(void *p) {
@@ -30,6 +58,13 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	op->size = 0;
 	omode = mode;
 	if (handle == 0) {
+		cs_opt_mem mem = {
+			.malloc = my_malloc,
+			.calloc = my_calloc,
+			.realloc = my_realloc,
+			.free = my_free
+		};
+		//cs_option (handle, CS_OPT_MEM, (size_t)&mem);
 		ret = cs_open (CS_ARCH_X86, mode, &handle);
 		if (ret) return 0;
 		cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
@@ -38,12 +73,18 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	if (n>0) {
 		if (insn->size>0) {
 			op->size = insn->size;
-			snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
-				insn->mnemonic, insn->op_str[0]?" ":"",
-				insn->op_str);
+			if (insn->op_str) {
+				snprintf (op->buf_asm, R_ASM_BUFSIZE, "%s%s%s",
+					insn->mnemonic, insn->op_str[0]?" ":"",
+					insn->op_str);
+			} else {
+				eprintf ("op_str is null wtf\n");
+			}
 		}
 	}
 	cs_free (insn, n);
+eprintf ("-------8<-------\n");
+	bufi = 0;
 	return op->size;
 }
 
