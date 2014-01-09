@@ -5,25 +5,26 @@
 #include <capstone.h>
 
 static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
-	int n, ret, mode;
-	cs_insn* insn;
-	csh handle;
+	cs_insn* insn = NULL;
+	cs_mode mode = 0;
+	int ret, n = 0;
+	csh cd;
 	mode = (a->bits==16)? CS_MODE_THUMB: CS_MODE_ARM;
 	if (a->big_endian)
 		mode |= CS_MODE_BIG_ENDIAN;
 	else
 		mode |= CS_MODE_LITTLE_ENDIAN;
-	ret = (a->bits==64)?
-		cs_open (CS_ARCH_ARM64, mode, &handle):
-		cs_open (CS_ARCH_ARM, mode, &handle);
 	op->size = 4;
-	strcpy (op->buf_asm, "invalid");
+	op->buf_asm[0] = 0;
+	ret = (a->bits==64)?
+		cs_open (CS_ARCH_ARM64, mode, &cd):
+		cs_open (CS_ARCH_ARM, mode, &cd);
 	if (ret) {
 		ret = -1;
 		goto beach;
 	}
-	cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
-	n = cs_disasm_ex (handle, (ut8*)buf, R_MIN (4, len),
+	cs_option (cd, CS_OPT_DETAIL, CS_OPT_OFF);
+	n = cs_disasm_ex (cd, buf, R_MIN (4, len),
 		a->pc, 1, &insn);
 	if (n<1) {
 		ret = -1;
@@ -41,7 +42,9 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	r_str_rmch (op->buf_asm, '#');
 	beach:
 	cs_free (insn, n);
-	cs_close (handle);
+	cs_close (cd);
+	if (!op->buf_asm[0])
+		strcpy (op->buf_asm, "invalid");
 	return op->size;
 }
 

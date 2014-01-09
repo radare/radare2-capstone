@@ -4,40 +4,50 @@
 #include <r_lib.h>
 #include <capstone.h>
 
+#define USE_CUSTOM_ALLOC 1
+
+#if USE_CUSTOM_ALLOC
 static int bufi = 0;
-static char buf[2990240];
+static char buf[65535];
+
+#define D if(0)
 
 static void *my_malloc(size_t s) {
 	char *ret;
-	printf ("MALLOC %d / %d\n", s, bufi);
+	D printf ("MALLOC %d / %d\n", (int)s, bufi);
 	ret = buf+bufi;
-	bufi += (s*2);
+	bufi += (s*3);
+	if (bufi>sizeof (buf)) {
+		eprintf ("MALLOC FAIL\n");
+		return NULL;
+	}
 	return ret;
 }
 
 static void *my_calloc(size_t c, size_t s) {
-return calloc(c, s);
-	printf ("--> calloc %d %zu\n", c, s);
-	return my_malloc (c*s);
+	ut8 *p = my_malloc (c*s);
+	memset (p, 0, c*s);
+	return p;
 }
 
 static void *my_realloc(void *p, size_t s) {
-//return realloc (p, s);
-eprintf ("REALLOC %d\n", s);
+	if (!p) return my_malloc (s);
+	D eprintf ("REALLOC %p %d\n", p, (int)s);
 	return p;
 }
 
 static void my_free(void *p) {
-	printf ("FREE %p\n", p);
-//free (p);
+	D eprintf ("FREE %d bytes\n", bufi);
+	D printf ("FREE %p\n", p);
 }
+#endif
 
-static csh handle = 0;
+static csh cd = 0;
 
 static int the_end(void *p) {
-	if (handle) {
-		cs_close (handle);
-		handle = 0;
+	if (cd) {
+		cs_close (cd);
+		cd = 0;
 	}
 	return R_TRUE;
 }
@@ -51,25 +61,39 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	mode = (a->bits==64)? CS_MODE_64: 
 		(a->bits==32)? CS_MODE_32:
 		(a->bits==16)? CS_MODE_16: 0;
-	if (handle && mode != omode) {
-		cs_close (handle);
-		handle = 0;
+	if (cd && mode != omode) {
+	//if (cd) {
+#if USE_CUSTOM_ALLOC
+		bufi = 0;
+		cs_opt_mem mem = {
+			.malloc = &malloc,
+			.calloc = &calloc,
+			.realloc = &realloc,
+			.free = &free
+		};
+		cs_option (cd, CS_OPT_MEM, (size_t)&mem);
+#endif
+		cs_close (cd);
+		cd = 0;
 	}
 	op->size = 0;
 	omode = mode;
-	if (handle == 0) {
-		cs_opt_mem mem = {
-			.malloc = my_malloc,
-			.calloc = my_calloc,
-			.realloc = my_realloc,
-			.free = my_free
-		};
-		//cs_option (handle, CS_OPT_MEM, (size_t)&mem);
-		ret = cs_open (CS_ARCH_X86, mode, &handle);
+	if (cd == 0) {
+		ret = cs_open (CS_ARCH_X86, mode, &cd);
 		if (ret) return 0;
-		cs_option (handle, CS_OPT_DETAIL, CS_OPT_OFF);
+#if USE_CUSTOM_ALLOC
+		bufi = 0;
+		cs_opt_mem mem = {
+			.malloc = &my_malloc,
+			.calloc = &my_calloc,
+			.realloc = &my_realloc,
+			.free = &my_free
+		};
+		cs_option (cd, CS_OPT_MEM, (size_t)&mem);
+#endif
+		cs_option (cd, CS_OPT_DETAIL, CS_OPT_OFF);
 	}
-	n = cs_disasm_ex (handle, (const ut8*)buf, len, off, 1, &insn);
+	n = cs_disasm_ex (cd, (const ut8*)buf, len, off, 1, &insn);
 	if (n>0) {
 		if (insn->size>0) {
 			op->size = insn->size;
@@ -83,8 +107,9 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		}
 	}
 	cs_free (insn, n);
-eprintf ("-------8<-------\n");
+#if USE_CUSTOM_ALLOC
 	bufi = 0;
+#endif
 	return op->size;
 }
 
