@@ -16,7 +16,7 @@ capstone (> 1.0)
 
 	git clone https://github.com/aquynh/capstone.git
 	cd capstone
-	git co ppc # next
+	git co next
 	make -j 8
 	make install PREFIX=/usr
 
