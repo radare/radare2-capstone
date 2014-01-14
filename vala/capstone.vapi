@@ -8,6 +8,23 @@ namespace Capstone {
 		MEM
 	}
 
+	[CCode (has_target=false)]
+	public delegate void* Malloc(size_t size);
+	[CCode (has_target=false)]
+	public delegate void* Calloc(size_t nmemb, size_t size);
+	[CCode (has_target=false)]
+	public delegate void* Realloc(void *ptr, size_t size);
+	[CCode (has_target=false)]
+	public delegate void Free(void *ptr);
+
+	[CCode (cname="cs_opt_mem", free_function="", destroy_function="")]
+	public struct OptionMem {
+		public Malloc malloc;
+		public Calloc calloc;
+		public Realloc realloc;
+		public Free free;
+	}
+
 	[CCode (cprefix="CS_OPT_")]
 	public enum OptionValue {
 		OFF = 0,
@@ -87,7 +104,9 @@ namespace Capstone {
 		HANDLE,
 		CSH,
 		MODE,
-		OPTION
+		OPTION,
+		DETAIL,
+		MEMSETUP
 	}
 
 	[SimpleType]
@@ -97,10 +116,20 @@ namespace Capstone {
 		public Error option (OptionType type, size_t value);
 		public Error errno();
 		public Error close();
+		public unowned string reg_name (uint reg_id);
+		public unowned string insn_name (uint insn_id);
+		public bool insn_group (Insn *insn, uint group_id);
+		public bool reg_read (Insn *insn, uint reg_id);
+		public bool reg_write (Insn *insn, uint reg_id);
+		public int op_count (Insn *insn, uint op_type);
+		public int op_index (Insn *insn, uint op_type, uint position);
 	}
 
 	[CCode (cname="cs_errno")]
 	public static Error errno (Handle handle);
+
+	[CCode (cname="cs_strerror")]
+	public static unowned string strerror(Error err);
 
 	[CCode (cname="cs_version")]
 	public static uint version (out int major, out int minor);
@@ -109,7 +138,7 @@ namespace Capstone {
 	public static bool supports (int arch);
 
 	[CCode (cname="cs_option")]
-	public static Error option (Handle handle, OptionType type, size_t value);
+	public static Error option (Handle? handle, OptionType type, size_t value);
 
 	[CCode (cname="cs_open")]
 	public static Error open (Arch arch, Mode mode, out Handle handle);
