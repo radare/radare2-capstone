@@ -626,7 +626,12 @@ namespace Capstone {
 
 		R13 = SP,
 		R14 = LR,
-		R15 = PC
+		R15 = PC,
+
+		SB = R9,
+		SL = R10,
+		FP = R11,
+		IP = R12
 	}
 
 	[CCode (cname="arm_insn_group", cprefix="ARM_GRP_", cheader_filename="arm.h")]

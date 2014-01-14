@@ -73,7 +73,6 @@ namespace Capstone {
 	[CCode (cname="mips_insn", cprefix="MIPS_INS_", cheader_filename="mips.h")]
 	public enum MipsInsn {
 		INVALID = 0,
-
 		ABSQ_S,
 		ADD,
 		ADDQH,
@@ -528,10 +527,9 @@ namespace Capstone {
 		WSBH,
 		XOR,
 		XORI,
-
 		NOP,
-
-		MAX,
+		NEGU,
+		MAX
 	}
 
 
