@@ -60,16 +60,10 @@ namespace Capstone {
 		ARM = 0,
 		ARM64 = 1,
 		MIPS = 2,
-		X86 = 3
-	}
-
-	[CCode (cheader_filename="capstone.h", cprefix="CS_MODE_")]
-	public enum OptType {
-		SYNTAX = 1
-	}
-	public enum OptValue {
-		SYNTAX_INTEL = 1,
-		SYNTAX_ATT = 2
+		X86 = 3,
+		PPC = 4,
+		MAX = 5,
+		ALL = 0xFFFF
 	}
 
 	[CCode (cheader_filename="capstone.h", cprefix="CS_MODE_")]
@@ -115,7 +109,7 @@ namespace Capstone {
 	public static bool supports (int arch);
 
 	[CCode (cname="cs_option")]
-	public static Error option (Handle handle, OptType type, size_t value);
+	public static Error option (Handle handle, OptionType type, size_t value);
 
 	[CCode (cname="cs_open")]
 	public static Error open (Arch arch, Mode mode, out Handle handle);
