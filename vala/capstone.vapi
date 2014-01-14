@@ -8,6 +8,12 @@ namespace Capstone {
 		MEM
 	}
 
+	[CCode (cprefix="CS_API_")]
+	public enum API {
+		MAJOR,
+		MINOR
+	}
+
 	[CCode (has_target=false)]
 	public delegate void* Malloc(size_t size);
 	[CCode (has_target=false)]
