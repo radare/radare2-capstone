@@ -6,7 +6,7 @@ namespace Capstone {
 		bool update_flags;
 		bool writeback;
 		uint8 op_count;
-		ArmOp operands[20];
+		ArmOp operands[36];
 	}
 
 	[CCode (cname="arm_reg", cprefix="ARM_SFT_", cheader_filename="arm.h")]

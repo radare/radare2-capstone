@@ -1,4 +1,4 @@
-/* Vala/Capstone Example - 2013 - pancake <pancake@nopcode.org> */
+/* Vala/Capstone Example - 2014 - pancake */
 
 using Capstone;
 
@@ -12,11 +12,11 @@ void main() {
 		return;
 	}
 
-	uint8 *bytes = (void*)"\xe9\x43\x48\x80\x00";
+	uint8 *bytes = (void*)"\xe9\x43\x48\x80\xe9\x43\x48\x80";
 	//uint8 *bytes = (void*)"\xc5\xf1\x6c\xc0\x90\xcc";
-	int bytes_len = 5;
+	int bytes_len = 8; //5;
 
-	var n = Capstone.disasm_dyn (handle, 
+	var n = Capstone.disasm_ex (handle, 
 		(void*)bytes, bytes_len,
 		0x8048000, 0, out insn);
 	if (n == 0) {
@@ -30,5 +30,6 @@ void main() {
 			stdout.printf ("--> %d\n", (int)op.id);
 		}
 	}
+	Capstone.free (insn, n);
 	Capstone.close (handle);
 }

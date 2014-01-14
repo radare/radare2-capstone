@@ -1,41 +1,49 @@
-/* Vala/Capstone Example - 2013 - pancake <pancake@nopcode.org> */
+/* Vala/Capstone Example - 2013-2014 - pancake */
 
 using Capstone;
 
 
-void *bytes = "\xe9\x43\x48\x80\x00";
+void *bytes = "\xe9\x43\x48\x80\x00\x90";
 //uint8 *bytes = (void*)"\xc5\xf1\x6c\xc0\x90\xcc";
-int bytes_len = 5;
+int bytes_len = 6;
 
 void main() {
 	Insn* insn;
-	Handle handle;
+	Handle csh;
 
-	var ret = Capstone.open (Arch.X86, Mode.@32, out handle);
+	var ret = Capstone.open (Arch.X86, Mode.@32, out csh);
 	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
 	}
 
-	var n = Capstone.disasm_dyn (handle, 
+	csh.option (OptionType.DETAIL, OptionValue.ON);
+
+	var n = Capstone.disasm_ex (csh, 
 		(void*)bytes, bytes_len,
 		0x8048000, 0, out insn);
 	if (n == 0) {
 		print ("invalid\n");
 	} else if (n>0) {
-		for (int i = 0; i<n; i++) {
-			var op = &insn[i];
+		Insn* op = insn;
+		for (int i = 0; i<n; i++, op++) {
+			print ("-----\n");
 			print ((string)op.mnemonic+" "+(string)op.op_str+"\n");
 			print (@"op.id=$(op.id)\n");
-			if (op.id == X86Insn.JMP) {
-				if (op.x86.operands[0].type == X86OpType.IMM) {
-					uint64 imm = op.x86.operands[0].imm;
-					stdout.printf ("=== 0x%lx\n",
-						(ulong)imm);
+			if (op.detail != null) {
+				var x86 = op->detail->x86;
+				switch (op.id) {
+				case X86Insn.JMP:
+					if (x86.operands[0].type == X86OpType.IMM) {
+						uint64 imm = x86.operands[0].imm;
+						stdout.printf ("=== 0x%lx\n",
+							(ulong)imm);
+					}
+					break;
 				}
 			}
 		}
 	}
-	Capstone.free (insn);
-	Capstone.close (handle);
+	Capstone.free (insn, n);
+	csh.close ();
 }

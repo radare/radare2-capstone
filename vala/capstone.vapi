@@ -1,20 +1,35 @@
 [CCode (cprefix="CS_")]
 namespace Capstone {
-	[CCode (cname="cs_insn", cheader_filename="capstone.h")]
-	public struct Insn {
-		uint32 id;
-		uint64 addr;
-		uint16 size;
-		char bytes[16];
-		char mnemonic[32];
-		char op_str[96];
-		uint32 regs_read[32];
-		uint32 regs_read_count;
-		uint32 regs_write[32];
-		uint32 regs_write_count;
-		uint32 groups[8];
-		uint32 groups_count;
+	[CCode (cprefix="CS_OPT_")]
+	public enum OptionType {
+		SYNTAX = 1,
+		DETAIL,
+		MODE,
+		MEM
+	}
+
+	[CCode (cprefix="CS_OPT_")]
+	public enum OptionValue {
+		OFF = 0,
+		ON = 3,
+		SYNTAX_DEFAULT = 0,
+		SYNTAX_INTEL,
+		SYNTAX_ATT,
+		SYNTAX_NOREGNAME
+	}
+
+	[CCode (cname="cs_detail", cheader_filename="capstone.h")]
+	public struct Detail {
+		uint8 regs_read[12];
+		uint8 regs_read_count;
+		uint8 regs_write[20];
+		uint8 regs_write_count;
+		uint8 groups[8];
+		uint8 groups_count;
 		// union
+#if CS_PPC
+		Capstone.PPC ppc;
+#endif
 #if CS_X86
 		Capstone.X86 x86;
 #endif
@@ -27,6 +42,17 @@ namespace Capstone {
 #if CS_MIPS
 		Capstone.MIPS mips;
 #endif
+	}
+
+	[CCode (cname="cs_insn", cheader_filename="capstone.h", cprefix="cs_", free_function="")]
+	public struct Insn {
+		uint id;
+		uint64 addr;
+		uint16 size;
+		char bytes[16];
+		char mnemonic[32];
+		char op_str[136];
+		Detail *detail;
 	}
 
 	[CCode (cheader_filename="capstone.h", cprefix="CS_ARCH_")]
@@ -72,14 +98,21 @@ namespace Capstone {
 
 	[SimpleType]
 	[GIR (name = "size_t")]
-	[CCode (cname="size_t", cheader_filename="sys/types.h")]
-	public struct Handle {}
+	[CCode (cname="size_t", cheader_filename="sys/types.h", cprefix="cs_")]
+	public struct Handle {
+		public Error option (OptionType type, size_t value);
+		public Error errno();
+		public Error close();
+	}
 
 	[CCode (cname="cs_errno")]
 	public static Error errno (Handle handle);
 
 	[CCode (cname="cs_version")]
-	public static void version (out int major, out int minor);
+	public static uint version (out int major, out int minor);
+
+	[CCode (cname="cs_support")]
+	public static bool supports (int arch);
 
 	[CCode (cname="cs_option")]
 	public static Error option (Handle handle, OptType type, size_t value);
@@ -100,7 +133,7 @@ namespace Capstone {
 	public static string insn_group (Handle handle, Insn *insn, uint group_id);
 
 	[CCode (cname="cs_free")]
-	public static void free (Insn *mem);
+	public static void free (Insn *mem, size_t count);
 
 	[CCode (cname="cs_reg_read")]
 	public static string reg_read (Handle handle, Insn *insn, uint reg_id);
@@ -114,9 +147,6 @@ namespace Capstone {
 	[CCode (cname="cs_op_index")]
 	public static int op_index (Handle handle, Insn *insn, uint op_type, uint post);
 
-	[CCode (cname="cs_disasm")]
-	public static size_t disasm (Handle handle, void* code, size_t len, uint64 addr, int count, out Insn* insn);
-
-	[CCode (cname="cs_disasm_dyn")]
-	public static size_t disasm_dyn (Handle handle, void* code, size_t len, uint64 addr, int count, out Insn* insn);
+	[CCode (cname="cs_disasm_ex")]
+	public static size_t disasm_ex (Handle handle, void* code, size_t len, uint64 addr, size_t count, out Insn* insn);
 }
