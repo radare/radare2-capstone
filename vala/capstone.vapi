@@ -74,7 +74,7 @@ namespace Capstone {
 		uint16 size;
 		char bytes[16];
 		char mnemonic[32];
-		char op_str[136];
+		char op_str[160];
 		Detail *detail;
 	}
 
