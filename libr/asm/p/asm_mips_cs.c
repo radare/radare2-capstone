@@ -49,6 +49,7 @@ RAsmPlugin r_asm_plugin_mips_cs = {
 	.desc = "Capstone MIPS disassembler",
 	.license = "BSD",
 	.arch = "mips",
+	.cpus = "n64,micro",
 	.bits = 16|32|64,
 	.init = NULL,
 	.fini = NULL,
