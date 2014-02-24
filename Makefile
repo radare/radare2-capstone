@@ -3,7 +3,7 @@ DIRS=libr
 all clean install uninstall:
 	$(foreach dir,${DIRS},${MAKE} -C $(dir) $@;)
 
-VERSION=2.0
+VERSION=2.1
 R2CS=radare2-capstone-$(VERSION)
 dist:
 	rm -rf $(R2CS)
