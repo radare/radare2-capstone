@@ -3,9 +3,9 @@
 using Capstone;
 
 
-void *bytes = "\xe9\x43\x48\x80\x00\x90";
+void *bytes = "\xe9\x43\x48\x80\x00\x90\x89\xd8";
 //uint8 *bytes = (void*)"\xc5\xf1\x6c\xc0\x90\xcc";
-int bytes_len = 6;
+int bytes_len = 8;
 
 public void* mycalloc(size_t nmemb, size_t size) {
 	return GLib.malloc (nmemb * size);
@@ -44,19 +44,37 @@ void main() {
 	} else if (n>0) {
 		Insn* op = insn;
 		for (int i = 0; i<n; i++, op++) {
-			print ("-----\n");
-			print ((string)op.mnemonic+" "+(string)op.op_str+"\n");
-			print (@"op.id=$(op.id)\n");
-			if (op.detail != null) {
+			if (Capstone.support (Support.DIET)) {
 				var x86 = op->detail->x86;
-				switch (op.id) {
-				case X86Insn.JMP:
-					if (x86.operands[0].type == X86OpType.IMM) {
-						uint64 imm = x86.operands[0].imm;
-						stdout.printf ("=== 0x%lx\n",
-							(ulong)imm);
+				var str = "";
+				for (int j=0;j<x86.op_count;j++) {
+					Capstone.X86Op x86op = x86.operands[j];
+					switch (x86op.type) {
+					case X86OpType.IMM:
+						str += ", 0x%llx".printf (x86op.imm);
+						break;
+					case X86OpType.REG:
+						str += ", r%u".printf (x86op.reg);
+						break;
+					default:
+						str += " (%d %d)".printf (x86op.type, x86.op_count);
+						break;
 					}
-					break;
+				}
+				print ("op%u%s\n".printf (op.id, str));
+			} else {
+				print (@"op.id=$(op.id)\n");
+				print ((string)op.mnemonic+": "+(string)op.op_str+"\n");
+				if (op.detail != null) {
+					var x86 = op->detail->x86;
+					switch (op.id) {
+					case X86Insn.JMP:
+						if (x86.operands[0].type == X86OpType.IMM) {
+							uint64 imm = x86.operands[0].imm;
+							stdout.printf ("=== 0x%lx\n", (ulong)imm);
+						}
+						break;
+					}
 				}
 			}
 		}

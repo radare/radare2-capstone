@@ -46,7 +46,7 @@ namespace Capstone {
 
 	[CCode (cprefix="CS_SUPPORT_")]
 	public enum Support {
-		Diet = 1<<16;
+		DIET = 1<<16;
 	}
 
 	[CCode (cname="cs_detail", cheader_filename="capstone.h")]
