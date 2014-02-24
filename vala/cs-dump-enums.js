@@ -32,7 +32,7 @@ const argv = process.argv.slice (2);
          var str = ''+fs.readFileSync (apifile);
          var lines = str.split(/\n/g);
          for (var i = 0; i<lines.length; i++) {
-           var line = lines[i].trim();
+           var line = lines[i].trim ();
            if (line.match(/CS_API_MAJOR/)) {
              major = line.split (/ /)[2];
            } else
@@ -59,7 +59,7 @@ const argv = process.argv.slice (2);
        var n_enum = 0;
        const nextWord = 'do { x = words[++i].trim(); if (i>=words.length) return; } while (!x);';
        const printEnum = 'if (!group || name===group) '+
-       'console.log (group?"\t\t"+okey.split("_")[2]+" = "+idx++ +",":name+" "+okey+" "+idx++);';
+       'console.log (group?"\t\t"+okey.split("_").slice(2).join("_")+" = "+idx+",":name+" "+okey+" "+idx);isNaN(idx)||idx++';
        for (var i=0; i<words.length; i++) {
          var x = words[i];
          if (!x) continue;

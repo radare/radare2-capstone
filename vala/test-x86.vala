@@ -12,18 +12,21 @@ public void* mycalloc(size_t nmemb, size_t size) {
 }
 
 void main() {
+	var use_glib_malloc = false;
 	Insn* insn;
 	Handle csh;
 
-	OptionMem mem = OptionMem ();
-	mem.malloc = GLib.malloc;
-	mem.calloc = mycalloc;
-	mem.realloc = GLib.realloc;
-	mem.free = GLib.free;
-
-	// Use GLib allocator functions
-	void *p = &mem;
-	Capstone.option (null, OptionType.MEM, (size_t)p);
+	if (use_glib_malloc) {
+		// Use GLib allocator functions
+		OptionMem mem = OptionMem ();
+		mem.malloc = GLib.malloc;
+		mem.calloc = mycalloc;
+		mem.realloc = GLib.realloc;
+		mem.free = GLib.free;
+		// TODO: mem.vsnprintf = string.vprintf;
+		void *p = &mem;
+		Capstone.option (null, OptionType.MEM, (size_t)p);
+	}
 
 	var ret = Capstone.open (Arch.X86, Mode.@32, out csh);
 	if (ret != Capstone.Error.OK) {

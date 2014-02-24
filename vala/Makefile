@@ -11,11 +11,12 @@ all:
 	valac $(CS_PPC_FLAGS) test-ppc.vala 
 
 CSD=node cs-dump-enums.js
+ARCHS=arm arm64 x86 ppc mips
 .PHONY: all clean enums doc
 enums:
 	@rm -rf enums
 	@mkdir -p enums
-	@for a in arm arm64 x86 ppc mips ; do \
+	@for a in $(ARCHS) ; do \
 		for b in `$(CSD) $$a 2> enums/CSVERSION | grep // |awk '{print $$2}'` ; do \
 			f="enums/$$a.$$b"; \
 			printf "[ ] $$f ..." ; \
@@ -23,7 +24,6 @@ enums:
 			printf "\r[x] $$f    \n" ; \
 		done ; \
 	done
-
 
 enums-sync:
 

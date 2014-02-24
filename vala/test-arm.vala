@@ -4,9 +4,9 @@ using Capstone;
 
 void main() {
 	Insn* insn;
-	Capstone.Handle handle;
+	Handle csh;
 
-	var ret = Capstone.open (Capstone.Arch.ARM, Capstone.Mode.@32, out handle);
+	var ret = Capstone.open (Capstone.Arch.ARM, Capstone.Mode.ARM, out csh);
 	if (ret != Capstone.Error.OK) {
 		stderr.printf ("Error initializing capstone\n");
 		return;
@@ -16,7 +16,7 @@ void main() {
 	//uint8 *bytes = (void*)"\xc5\xf1\x6c\xc0\x90\xcc";
 	int bytes_len = 8; //5;
 
-	var n = Capstone.disasm_ex (handle, 
+	var n = Capstone.disasm_ex (csh, 
 		(void*)bytes, bytes_len,
 		0x8048000, 0, out insn);
 	if (n == 0) {
@@ -31,5 +31,5 @@ void main() {
 		}
 	}
 	Capstone.free (insn, n);
-	Capstone.close (handle);
+	Capstone.close (csh);
 }

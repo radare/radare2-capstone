@@ -22,6 +22,8 @@ namespace Capstone {
 	public delegate void* Realloc(void *ptr, size_t size);
 	[CCode (has_target=false)]
 	public delegate void Free(void *ptr);
+	[CCode (has_target=false)]
+	public delegate string Vsnprintf(void *str, string fmt, size_t size, string ptr);
 
 	[CCode (cname="cs_opt_mem", free_function="", destroy_function="")]
 	public struct OptionMem {
@@ -29,6 +31,7 @@ namespace Capstone {
 		public Calloc calloc;
 		public Realloc realloc;
 		public Free free;
+		public Vsnprintf vsnprintf;
 	}
 
 	[CCode (cprefix="CS_OPT_")]
