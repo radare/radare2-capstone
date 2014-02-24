@@ -121,7 +121,8 @@ namespace Capstone {
 		OPTION,
 		DETAIL,
 		MEMSETUP,
-		VERSION
+		VERSION,
+		DIET
 	}
 
 	[SimpleType]
