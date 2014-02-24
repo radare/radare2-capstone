@@ -10,5 +10,28 @@ all:
 	valac $(CS_MIPS_FLAGS) test-mips.vala
 	valac $(CS_PPC_FLAGS) test-ppc.vala 
 
+CSD=node cs-dump-enums.js
+.PHONY: all clean enums doc
+enums:
+	@rm -rf enums
+	@mkdir -p enums
+	@for a in arm arm64 x86 ppc mips ; do \
+		for b in `$(CSD) $$a 2> enums/CSVERSION | grep // |awk '{print $$2}'` ; do \
+			f="enums/$$a.$$b"; \
+			printf "[ ] $$f ..." ; \
+			$(CSD) $$a $$b 2> /dev/null > $$f ; \
+			printf "\r[x] $$f    \n" ; \
+		done ; \
+	done
+
+
+enums-sync:
+
+enums-diff:
+
+clean:
+	rm -rf enums
+	rm -f test-arm test-mips test-x86 test-ppc
+
 doc:
 	valadoc -o capstone *.vapi
