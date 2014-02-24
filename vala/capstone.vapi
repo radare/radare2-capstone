@@ -44,6 +44,11 @@ namespace Capstone {
 		SYNTAX_NOREGNAME
 	}
 
+	[CCode (cprefix="CS_SUPPORT_")]
+	public enum Support {
+		Diet = 1<<16;
+	}
+
 	[CCode (cname="cs_detail", cheader_filename="capstone.h")]
 	public struct Detail {
 		uint8 regs_read[12];
@@ -115,7 +120,8 @@ namespace Capstone {
 		MODE,
 		OPTION,
 		DETAIL,
-		MEMSETUP
+		MEMSETUP,
+		VERSION
 	}
 
 	[SimpleType]
@@ -141,7 +147,7 @@ namespace Capstone {
 	public static unowned string strerror(Error err);
 
 	[CCode (cname="cs_version")]
-	public static uint version (out int major, out int minor);
+	public static int version (out int major, out int minor);
 
 	[CCode (cname="cs_support")]
 	public static bool supports (int arch);
@@ -178,6 +184,9 @@ namespace Capstone {
 
 	[CCode (cname="cs_op_index")]
 	public static int op_index (Handle handle, Insn *insn, uint op_type, uint post);
+
+	[CCode (cname="cs_support")]
+	public static bool support (int query);
 
 	[CCode (cname="cs_disasm_ex")]
 	public static size_t disasm_ex (Handle handle, void* code, size_t len, uint64 addr, size_t count, out Insn* insn);
