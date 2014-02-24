@@ -8,6 +8,9 @@
 #if CS_API_MAJOR < 2
 #error Old Capstone not supported
 #endif
+#if CS_API_MINOR < 1
+#error Old Capstone not supported
+#endif
 
 static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 	csh handle;
@@ -57,12 +60,14 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				op->type = R_ANAL_OP_TYPE_LEA;
 				break;
 			case X86_INS_PUSH:
-			case X86_INS_PUSHA:
+			case X86_INS_PUSHAW:
+			case X86_INS_PUSHAL:
 			case X86_INS_PUSHF:
 				op->type = R_ANAL_OP_TYPE_PUSH;
 				break;
 			case X86_INS_POP:
-			case X86_INS_POPA:
+			case X86_INS_POPAW:
+			case X86_INS_POPAL:
 			case X86_INS_POPF:
 			case X86_INS_POPCNT:
 				op->type = R_ANAL_OP_TYPE_POP;
@@ -75,9 +80,13 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 			case X86_INS_SYSRET:
 				op->type = R_ANAL_OP_TYPE_RET;
 				break;
+			case X86_INS_INT1:
 			case X86_INS_INT3:
 			case X86_INS_INTO:
 			case X86_INS_INT:
+			case X86_INS_VMCALL:
+			case X86_INS_VMMCALL:
+			case X86_INS_SYSCALL:
 				op->type = R_ANAL_OP_TYPE_TRAP;
 				break;
 			case X86_INS_JL:
@@ -103,7 +112,6 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				op->fail = addr+op->size;
 				break;
 			case X86_INS_CALL:
-			case X86_INS_CALLW:
 			case X86_INS_LCALL:
 				op->type = R_ANAL_OP_TYPE_CALL;
 				// TODO: what if UCALL?
@@ -113,7 +121,6 @@ static int analop(RAnal *a, RAnalOp *op, ut64 addr, const ut8 *buf, int len) {
 				break;
 			case X86_INS_JMP:
 			case X86_INS_LJMP:
-			case X86_INS_JMPQ:
 				// TODO: what if UJMP?
 				op->jump = insn->detail->x86.operands[0].imm;
 				op->type = R_ANAL_OP_TYPE_JMP;
