@@ -4,7 +4,6 @@
 #include <r_lib.h>
 #include <capstone.h>
 
-#ifdef CS_ARCH_PPC
 static csh handle = 0;
 
 static int the_end(void *p) {
@@ -64,5 +63,4 @@ struct r_lib_struct_t radare_plugin = {
 	.type = R_LIB_TYPE_ASM,
 	.data = &r_asm_plugin_ppc_cs
 };
-#endif
 #endif
