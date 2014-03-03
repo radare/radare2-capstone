@@ -40,5 +40,5 @@ void main() {
 		}
 	}
 	Capstone.free (insn, n);
-	close (csh);
+	close (ref csh);
 }

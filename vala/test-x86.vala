@@ -2,7 +2,6 @@
 
 using Capstone;
 
-
 void *bytes = "\xe9\x43\x48\x80\x00\x90\x89\xd8";
 //uint8 *bytes = (void*)"\xc5\xf1\x6c\xc0\x90\xcc";
 int bytes_len = 8;
@@ -25,7 +24,7 @@ void main() {
 		mem.free = GLib.free;
 		// TODO: mem.vsnprintf = string.vprintf;
 		void *p = &mem;
-		Capstone.option (null, OptionType.MEM, (size_t)p);
+		Capstone.option (0, OptionType.MEM, (size_t)p);
 	}
 
 	var ret = Capstone.open (Arch.X86, Mode.@32, out csh);
@@ -51,7 +50,7 @@ void main() {
 					Capstone.X86Op x86op = x86.operands[j];
 					switch (x86op.type) {
 					case X86OpType.IMM:
-						str += ", 0x%llx".printf (x86op.imm);
+						str += ", 0x%lx".printf ((ulong)x86op.imm);
 						break;
 					case X86OpType.REG:
 						str += ", r%u".printf (x86op.reg);
@@ -80,5 +79,6 @@ void main() {
 		}
 	}
 	Capstone.free (insn, n);
-	csh.close ();
+	Capstone.close (ref csh);
+	//csh.close ();
 }

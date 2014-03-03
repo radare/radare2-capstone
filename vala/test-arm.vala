@@ -31,5 +31,5 @@ void main() {
 		}
 	}
 	Capstone.free (insn, n);
-	Capstone.close (csh);
+	Capstone.close (ref csh);
 }

@@ -154,13 +154,13 @@ namespace Capstone {
 	public static bool supports (int arch);
 
 	[CCode (cname="cs_option")]
-	public static Error option (Handle? handle, OptionType type, size_t value);
+	public static Error option (size_t handle, OptionType type, size_t value);
 
 	[CCode (cname="cs_open")]
 	public static Error open (Arch arch, Mode mode, out Handle handle);
 
 	[CCode (cname="cs_close")]
-	public static int close (Handle handle);
+	public static int close (ref Handle handle);
 
 	[CCode (cname="cs_reg_name")]
 	public static string reg_name (Handle handle, uint reg);
