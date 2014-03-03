@@ -42,7 +42,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	r_str_rmch (op->buf_asm, '#');
 	beach:
 	cs_free (insn, n);
-	cs_close (cd);
+	cs_close (&cd);
 	if (!op->buf_asm[0])
 		strcpy (op->buf_asm, "invalid");
 	return op->size;

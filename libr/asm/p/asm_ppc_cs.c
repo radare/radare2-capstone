@@ -8,7 +8,7 @@ static csh handle = 0;
 
 static int the_end(void *p) {
 	if (handle) {
-		cs_close (handle);
+		cs_close (&handle);
 		handle = 0;
 	}
 	return R_TRUE;
@@ -23,7 +23,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	mode = (a->bits==64)? CS_MODE_64: 
 		(a->bits==32)? CS_MODE_32: 0;
 	if (handle && mode != omode) {
-		cs_close (handle);
+		cs_close (&handle);
 		handle = 0;
 	}
 	op->size = 0;

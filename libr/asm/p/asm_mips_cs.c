@@ -39,7 +39,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 	// TODO: remove the '$'<registername> in the string
 	beach:
 	cs_free (insn, n);
-	cs_close (handle);
+	cs_close (&handle);
 	fin:
 	return ret;
 }

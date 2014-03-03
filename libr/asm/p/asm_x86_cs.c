@@ -46,7 +46,7 @@ static csh cd = 0;
 
 static int the_end(void *p) {
 	if (cd) {
-		cs_close (cd);
+		cs_close (&cd);
 		cd = 0;
 	}
 	return R_TRUE;
@@ -73,7 +73,7 @@ static int disassemble(RAsm *a, RAsmOp *op, const ut8 *buf, int len) {
 		};
 		cs_option (cd, CS_OPT_MEM, (size_t)&mem);
 #endif
-		cs_close (cd);
+		cs_close (&cd);
 		cd = 0;
 	}
 	op->size = 0;
